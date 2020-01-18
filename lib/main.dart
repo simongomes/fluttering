@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttering/CounterModel.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,37 +8,53 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<CounterModel>(
-      create: (context) => CounterModel(),
-      child: MaterialApp(
+    return MaterialApp(
           title: "Provider Basic",
           theme: ThemeData(
               primarySwatch: Colors.blue
           ),
-          home: CounterApp()
-      ),
+          home: TextFieldScreen()
     );
   }
 }
 
-class CounterApp extends StatelessWidget {
+class TextFieldScreen extends StatefulWidget {
+  @override
+  _TextFieldScreenState createState() => _TextFieldScreenState();
+}
+
+class _TextFieldScreenState extends State<TextFieldScreen> {
+  final _textFieldController = TextEditingController();
+  String name = "";
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold (
-      body: Center(
-        child: Consumer<CounterModel> (
-          builder: (context, counterModel, _) {
-            return Text("${counterModel.getCount}", style: TextStyle(fontSize: 30));
-          },
-        )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Provider.of<CounterModel>(context, listen: false).incrementCounter();
-        },
-        child: Icon(Icons.add),
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(name),
+          Container(
+            child: TextField(
+              controller: _textFieldController,
+            ),
+            padding: EdgeInsets.all(32),
+          ),
+          Container(
+            width: double.infinity,
+            child: FlatButton(
+              child: Text('Update Text', style: TextStyle(color: Colors.white)),
+              color: Colors.deepPurple,
+              onPressed: () {
+                setState(() {
+                  name = _textFieldController.text;
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
-
 }
+
