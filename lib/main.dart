@@ -13,46 +13,40 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
               primarySwatch: Colors.blue
           ),
-          home: TextFieldScreen()
+          home: FutureScreen()
     );
   }
 }
+class FutureScreen extends StatelessWidget {
 
-class TextFieldScreen extends StatefulWidget {
-  @override
-  _TextFieldScreenState createState() => _TextFieldScreenState();
-}
-
-class _TextFieldScreenState extends State<TextFieldScreen> {
-  final _textFieldController = TextEditingController();
-  String name = "";
+  Future<String> downloadedData() {
+    return Future.delayed(Duration(seconds: 5), () {
+      return "Download Complete";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(name),
-          Container(
-            child: TextField(
-              controller: _textFieldController,
-            ),
-            padding: EdgeInsets.all(32),
+      appBar: AppBar(title: Text("Future Example"),),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.favorite_border),
+        onPressed: () {},
+      ),
+      body: Container(
+        padding: EdgeInsets.all(32),
+        child: Center(
+          child: FutureBuilder<String>(
+            future: downloadedData(),
+            builder: (context, response) {
+              if(response.connectionState == ConnectionState.done) {
+                return Text(response.data);
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
           ),
-          Container(
-            width: double.infinity,
-            child: FlatButton(
-              child: Text('Update Text', style: TextStyle(color: Colors.white)),
-              color: Colors.deepPurple,
-              onPressed: () {
-                setState(() {
-                  name = _textFieldController.text;
-                });
-              },
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
