@@ -1,54 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:fluttering/WelcomeScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'HomeScreen.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-          title: "Provider Basic",
-          theme: ThemeData(
-              primarySwatch: Colors.blue
-          ),
-          home: FutureScreen()
-    );
+        title: "Provider Basic",
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: MainScreen());
   }
 }
-class FutureScreen extends StatelessWidget {
 
-  Future<String> downloadedData() {
-    return Future.delayed(Duration(seconds: 5), () {
-      return "Download Complete";
-    });
-  }
-
+class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Future Example"),),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.favorite_border),
-        onPressed: () {},
+      appBar: AppBar(
+        title: Text("Shared Preferences"),
       ),
-      body: Container(
-        padding: EdgeInsets.all(32),
-        child: Center(
-          child: FutureBuilder<String>(
-            future: downloadedData(),
-            builder: (context, response) {
-              if(response.connectionState == ConnectionState.done) {
-                return Text(response.data);
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
+      body: Center(
+        child: FlatButton(
+          child: Text(
+            "Proceed",
+            style: TextStyle(color: Colors.white),
           ),
+          color: Colors.deepPurple,
+          onPressed: () async {
+            bool visitingFlag = await getVisitedFlag();
+
+            setVisitedFlag();
+
+            if (visitingFlag) {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            } else {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
+            }
+          },
         ),
       ),
     );
   }
 }
 
+setVisitedFlag() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  preferences.setBool("already_visited", true);
+}
+
+getVisitedFlag() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  bool alradyVisited = preferences.getBool('already_visited') ?? false;
+  return alradyVisited;
+}
